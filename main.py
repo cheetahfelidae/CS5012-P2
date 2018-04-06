@@ -12,7 +12,7 @@ ugrammar = FeatureGrammar.fromstring("""\
     AUX[NUM=sing] -> 'does'
     AUX[NUM=plur] -> 'do'
     
-    # Nound Phrase
+    # Noun Phrase
     NP[NUM=?n]   -> NOM | DET[NUM=?n] NOM | PROP_N[NUM=?n]
     NP[NUM=plur] -> PROP_N[NUM=?n] CONJ NP[NUM=?n]
     # Nominal
@@ -39,19 +39,19 @@ ugrammar = FeatureGrammar.fromstring("""\
     
     # Lexical
     DET[NUM=sing] -> 'a'
-    # DET[NUM=plur] -> 
+    DET[NUM=plur] -> 'these'
     DET -> 'the'
     PROP_N[NUM=sing]-> 'Bart' | 'Homer' | 'Lisa'
-    N[NUM=sing] -> 'shoe'   | 'kitchen'     | 'table' | 'salad'
-    N[NUM=plur] -> 'shoes'  | 'kitchens'    | 'tables' | 'salad'
+    N[NUM=sing] -> 'shoe'   | 'kitchen'     | 'table'   | 'salad'
+    N[NUM=plur] -> 'shoes'  | 'kitchens'    | 'tables'  | 'salad'
     N -> 'milk' | 'midnight'
     
     IV[FORM=base, NUM=plur]     -> 'laugh'
-    TV[FORM=base, NUM=plur]     -> 'drink'  | 'wear'    | 'serve'   | 'think'
+    TV[FORM=base, NUM=plur]     -> 'drink'  | 'wear'    | 'serve'   | 'think' | 'likes'
     IV[FORM=vbz,  NUM=sing]     -> 'laughs'
-    TV[FORM=vbz,  NUM=sing]     -> 'drinks' | 'wears'   | 'serves'  | 'thinks'
+    TV[FORM=vbz,  NUM=sing]     -> 'drinks' | 'wears'   | 'serves'  | 'thinks' | 'like'
     IV[FORM=pret]               -> 'laughed'
-    TV[FORM=pret]               -> 'drank'  | 'wore'    | 'served'  | 'thought'
+    TV[FORM=pret]               -> 'drank'  | 'wore'    | 'served'  | 'thought' | 'liked'
 """)
 
 uparser = FeatureChartParser(ugrammar)
@@ -69,6 +69,7 @@ Homer never drinks milk in the kitchen before midnight
 when Homer drinks milk Bart laughs
 when does Lisa drink the milk on the table
 when do Lisa and Bart wear shoes
+Bart likes drinking milk
 """
 sents = text.splitlines()
 for sent in sents:
