@@ -46,12 +46,12 @@ ugrammar = FeatureGrammar.fromstring("""\
     N[NUM=plur] -> 'shoes'  | 'kitchens'    | 'tables' | 'salad'
     N -> 'milk' | 'midnight'
     
-    IV[FORM=base, NUM=sing]      -> 'laughs'
-    TV[FORM=base, NUM=sing]      -> 'drinks' | 'wears'   | 'serves'  | 'thinks'
-    IV[FORM=base, NUM=plur]      -> 'laugh'
-    TV[FORM=base, NUM=plur]      -> 'drink'  | 'wear'    | 'serve'   | 'think'
-    IV[FORM=vbz]                 -> 'laughed'
-    TV[FORM=vbz]                 -> 'drank'  | 'wore'    | 'served'  | 'thought'
+    IV[FORM=base, NUM=plur]     -> 'laugh'
+    TV[FORM=base, NUM=plur]     -> 'drink'  | 'wear'    | 'serve'   | 'think'
+    IV[FORM=vbz,  NUM=sing]     -> 'laughs'
+    TV[FORM=vbz,  NUM=sing]     -> 'drinks' | 'wears'   | 'serves'  | 'thinks'
+    IV[FORM=pret]               -> 'laughed'
+    TV[FORM=pret]               -> 'drank'  | 'wore'    | 'served'  | 'thought'
 """)
 
 uparser = FeatureChartParser(ugrammar)
