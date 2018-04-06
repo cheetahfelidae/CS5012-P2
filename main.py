@@ -2,49 +2,48 @@ from nltk.grammar import FeatureGrammar
 from nltk import FeatureChartParser
 
 ugrammar = FeatureGrammar.fromstring("""\
-    # S expansion productions
+    # Sentence
     S -> NP[NUM=?n] VP[NUM=?n] | WH AUX[NUM=?n] NP[NUM=?n] VP | WH NP[NUM=?n] VP S
     
-    # WH productions
+    # WH-questions
     WH -> 'when'
     
-    # AUX productions
+    # Auxiliary
     AUX[NUM=sing] -> 'does'
     AUX[NUM=plur] -> 'do'
     
-    # NP expansion productions
+    # Nound Phrase
     NP[NUM=?n]   -> NOM | DET[NUM=?n] NOM | PROP_N[NUM=?n]
     NP[NUM=plur] -> PROP_N[NUM=?n] CONJ NP[NUM=?n]
-    
-    # nominal
+    # Nominal
     NOM -> NOM PP
     NOM -> ADJ NOM | N[NUM=?n]
     
-    # adjective productions
+    # Adjective
     ADJ -> 'blue' | 'healthy' | 'green'
     
-    # preposition productions
-    PP -> P NP
-    P -> 'in' | 'before' | 'on'
+    # Preposition
+    PP  -> P NP
+    P   -> 'in' | 'before' | 'on'
     
-    # conjunction productions
+    # Conjunction
     CONJ -> 'and'
     
-    # VP expansion productions
+    # Verb Phrase
     VP[FORM=?t, NUM=?n] -> ADV VP[FORM=?t, NUM=?n]
     VP[FORM=?t, NUM=?n] -> IV[FORM=?t, NUM=?n]
     VP[FORM=?t, NUM=?n] -> TV[FORM=?t, NUM=?n] NP | TV[FORM=?t, NUM=?n] S | TV[FORM=?t, NUM=?n] NP NP
     
-    # adverb
+    # Adverb
     ADV -> 'always' | 'never'
     
-    # Lexical Productions
+    # Lexical
     DET[NUM=sing] -> 'a'
     # DET[NUM=plur] -> 
     DET -> 'the'
     PROP_N[NUM=sing]-> 'Bart' | 'Homer' | 'Lisa'
     N[NUM=sing] -> 'shoe'   | 'kitchen'     | 'table' | 'salad'
-    N[NUM=plur] -> 'shoes'  | 'kitchens'    | 'table' | 'salad'
+    N[NUM=plur] -> 'shoes'  | 'kitchens'    | 'tables' | 'salad'
     N -> 'milk' | 'midnight'
     
     IV[FORM=base, NUM=sing]      -> 'laughs'
