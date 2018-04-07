@@ -8,7 +8,7 @@ ugrammar = FeatureGrammar.fromstring("""\
     S ->    AUX[FORM=?t, NUM=?n] NP[NUM=?n] VP
     
     # WH-questions
-    WH -> 'what' | 'when' | 'where' | 'why' | 'whom'
+    WH -> 'what' | 'when' | 'where' | 'why' | 'who' | 'whom'
     
     ######################################################################################
     ################################### Noun Phrase ######################################
@@ -17,7 +17,7 @@ ugrammar = FeatureGrammar.fromstring("""\
     NP[NUM=plur] -> PROP_N[NUM=?n] CONJ NP[NUM=?n]
     
     ######### Predeterminers #########
-    PRE_DET       -> 'all'
+    PRE_DET       -> 'all' | 'most'
     
     ######### Determiners #############
     DET[NUM=sing] -> 'a' | 'that'
@@ -25,67 +25,81 @@ ugrammar = FeatureGrammar.fromstring("""\
     DET -> 'the'
     
     ######### Adjective ###############
-    ADJ -> 'blue' | 'healthy' | 'green'
+    ADJ -> 'blue' | 'healthy' | 'green' | 'friendly'
     
     ######### Nominal #################
     NOM -> NOM PP | NOM REL_CL | NOM GER_P | NOM N[NUM=?n]
     NOM -> ADJ NOM | PROP_N[NUM=?n] | N[NUM=?n] | GER_P
+    
+    ######## Pronouns ##################
+    PROP_N[NUM=sing]-> 'Bart' | 'Homer' | 'Lisa'
+    
+    ######## Nouns #####################
+    N[NUM=sing] -> 'shoe'   | 'kitchen'     | 'table'   | 'salad' | 'plane'  | 'flight' | 'train'  | 'house' | 'person'
+    N[NUM=plur] -> 'shoes'  | 'kitchens'    | 'tables'  | 'salad' | 'planes' | 'flights'| 'trains' | 'houses'| 'people'
+    N -> 'milk' | 'morning' | 'midnight' | 'Edinburgh' | 'London' | '9' | '10' | 'breakfast'
     
     ######### Gerund Phrase ############
     GER_P -> GER PP | GER
     GER -> IV[FORM=prespart] | TV[FORM=prespart] NP
     
     ######### Preposition Phrase #######
-    PP  -> P NP
-    P   -> 'in' 'on' | 'at' | 'before' | 'after' | 'from' | 'to'
+    PP  ->  P NP
+    P   -> 'in' | 'on' | 'at' | 'before' | 'after' | 'from' | 'to'
     
     ######## Relative Clause ###########
-    REL_CL -> DET[NUM=sing] VP
+    REL_CL -> REL_P VP
+    REL_P  -> 'that' | 'who'
     
-    # Conjunction
+    ######## Conjunction ###############
     CONJ -> 'and'
     
-    # Adverb
+    ######## Adverb ####################
     ADV -> 'always' | 'never'
     
-    
-    
-    
-    PROP_N[NUM=sing]-> 'Bart' | 'Homer' | 'Lisa'
-    
-    N[NUM=sing] -> 'shoe'   | 'kitchen'     | 'table'   | 'salad' | 'plane'  | 'flight' | 'train'
-    N[NUM=plur] -> 'shoes'  | 'kitchens'    | 'tables'  | 'salad' | 'planes' | 'flights'| 'trains'
-    N -> 'milk' | 'morning' | 'midnight' | 'Edinburgh' | 'London' | '9' | '10' | 'breakfast'
-    
-    # Auxiliary
-    AUX[FORM=base, NUM=sing]     -> 'does'
-    AUX[FORM=base, NUM=plur]     -> 'do'
-    AUX[FORM=pret]               -> 'did'
+    ######## Auxiliary #################
+    AUX[FORM=base]               -> 'do'
+    AUX[FORM=vbz]                -> 'does'
+    AUX[FORM=pret]               -> 'did' 
     AUX[FORM=pastpart, NUM=sing] -> 'has'
     AUX[FORM=pastpart, NUM=plur] -> 'have'
     
-    # Not
+    ######## Not #######################
     NOT -> 'not'
     
-    # Modal
+    ######## Modal ######################
     MODP[NUM=plur] -> MOD AUX[NUM=plur] | MOD NOT AUX[NUM=plur]
     MOD -> 'may'
     
-    # Verb
+    ######################################################################################
+    ################################### Verb #############################################
+    ######################################################################################
     VP[FORM=?t, NUM=?n] -> ADV VP[FORM=?t, NUM=?n] | MODP[NUM=plur] VP[FORM=?t, NUM=plur]
     VP[FORM=?t, NUM=?n] -> IV[FORM=?t, NUM=?n] | IV[FORM=?t, NUM=?n] PP
     VP[FORM=?t, NUM=?n] -> TV[FORM=?t, NUM=?n] NP | TV[FORM=?t, NUM=?n] NP NP | TV[FORM=?t, NUM=?n] S 
+    VP[FORM=?t, NUM=?n] -> VTB[FORM=?t, NUM=?n] ADJ
     
-    IV[FORM=base, NUM=plur]     -> 'drink'      | 'serve'   | 'laugh'    | 'leave'
-    TV[FORM=base, NUM=plur]     -> 'drink'      | 'wear'    | 'serve'    | 'think' | 'like' | 'see'
-    IV[FORM=vbz,  NUM=sing]     -> 'drinks'     | 'serves'  | 'laughs'   | 'leaving'
-    TV[FORM=vbz,  NUM=sing]     -> 'drinks'     | 'wears'   | 'serves'   | 'thinks' | 'likes' | 'sees'
-    IV[FORM=pret]               -> 'drank'      | 'served'  | 'laughed'  | 'left'
+    ######## Verb To Be ################
+    VTB[FORM=base, NUM=plur] -> 'are'
+    VTB[FORM=base, NUM=sing] -> 'is' | 'am'
+    VTB[FORM=vbz, NUM=plur]  -> 'were'
+    VTB[FORM=vbz, NUM=sing]  -> 'was'
+    VTB[FORM=pret]           -> 'been'
+    VTB[FORM=prespart]       -> 'being'
+    
+    ######## Intransitive Verb #########
+    IV[FORM=base, NUM=plur]     -> 'drink'      | 'serve'   | 'laugh'    | 'leave'  | 'live'
+    IV[FORM=vbz,  NUM=sing]     -> 'drinks'     | 'serves'  | 'laughs'   | 'leaving'| 'living'    
+    IV[FORM=pret]               -> 'drank'      | 'served'  | 'laughed'  | 'left'   | 'lived'
+    IV[FORM=pastpart]           -> 'drunk'      | 'served'  | 'laughed'  | 'left'   | 'lived'
+    IV[FORM=prespart]           -> 'drinking'   | 'serving' | 'laughing' | 'leaving'| 'living'
+    
+    ######## Transitive Verb ###########
+    TV[FORM=base, NUM=plur]     -> 'drink'      | 'wear'    | 'serve'    | 'think'   | 'like'  | 'see'
+    TV[FORM=vbz,  NUM=sing]     -> 'drinks'     | 'wears'   | 'serves'   | 'thinks'  | 'likes' | 'sees'
     TV[FORM=pret]               -> 'drank'      | 'wore'    | 'served'   | 'thought' | 'liked' | 'saw'
-    IV[FORM=pastpart]           -> 'drunk'      | 'served'  | 'laughed'  | 'left'
     TV[FORM=pastpart]           -> 'drunk'      | 'worn'    | 'served'   | 'thought' | 'liked' | 'seen'
-    IV[FORM=prespart]           -> 'drinking'   | 'serving' | 'laughing' | 'leaving'
-    TV[FORM=prespart]           -> 'drinking'   | 'wearing' | 'serving'  | 'thinking' | 'liking' | 'seeing'
+    TV[FORM=prespart]           -> 'drinking'   | 'wearing' | 'serving'  | 'thinking'| 'liking'| 'seeing'
 """)
 
 uparser = FeatureChartParser(ugrammar)
@@ -114,7 +128,8 @@ whom do Homer and Lisa serve
 what salad does Bart think Homer serves Lisa
 did the plane leave
 all the morning trains from Edinburgh to London leave before 10
-all flights that serve breakfast leave at 9
+most flights that serve breakfast leave at 9
+the people who live in the house are friendly
 """
 sents = text.splitlines()
 for sent in sents:
