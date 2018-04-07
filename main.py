@@ -4,28 +4,43 @@ from nltk import FeatureChartParser
 ugrammar = FeatureGrammar.fromstring("""\
     # Sentence
     S -> NP[NUM=?n] VP[NUM=?n] 
-    S -> WH AUX[FORM=?t, NUM=?n] NP[NUM=?n] VP | WH NP[NUM=?n] AUX[FORM=?t, NUM=?n] NP[NUM=?n] VP | AUX[FORM=?t, NUM=?n] NP[NUM=?n] VP | WH NP[NUM=?n] VP S
+    S -> WH AUX[FORM=?t, NUM=?n] NP[NUM=?n] VP | WH NP[NUM=?n] AUX[FORM=?t, NUM=?n] NP[NUM=?n] VP | WH NP[NUM=?n] VP S
+    S ->    AUX[FORM=?t, NUM=?n] NP[NUM=?n] VP
     
     # WH-questions
     WH -> 'what' | 'when' | 'where' | 'why' | 'whom'
     
-    # Noun
+    ######################################################################################
+    ################################### Noun Phrase ######################################
+    ######################################################################################
     NP[NUM=?n]   -> PRE_DET NP[NUM=?n]| DET[NUM=?n] NOM | NOM
     NP[NUM=plur] -> PROP_N[NUM=?n] CONJ NP[NUM=?n]
-    # Nominal
-    NOM -> NOM PP | NOM GER_P | NOM N[NUM=?n]
+    
+    ######### Predeterminers #########
+    PRE_DET       -> 'all'
+    
+    ######### Determiners #############
+    DET[NUM=sing] -> 'a' | 'that'
+    DET[NUM=plur] -> 'these'
+    DET -> 'the'
+    
+    ######### Adjective ###############
+    ADJ -> 'blue' | 'healthy' | 'green'
+    
+    ######### Nominal #################
+    NOM -> NOM PP | NOM REL_CL | NOM GER_P | NOM N[NUM=?n]
     NOM -> ADJ NOM | PROP_N[NUM=?n] | N[NUM=?n] | GER_P
     
-    # Gerund
+    ######### Gerund Phrase ############
     GER_P -> GER PP | GER
     GER -> IV[FORM=prespart] | TV[FORM=prespart] NP
     
-    # Adjective
-    ADJ -> 'blue' | 'healthy' | 'green'
-    
-    # Preposition
+    ######### Preposition Phrase #######
     PP  -> P NP
-    P   -> 'in' | 'before' | 'on' | 'from' | 'to'
+    P   -> 'in' 'on' | 'at' | 'before' | 'after' | 'from' | 'to'
+    
+    ######## Relative Clause ###########
+    REL_CL -> DET[NUM=sing] VP
     
     # Conjunction
     CONJ -> 'and'
@@ -33,15 +48,14 @@ ugrammar = FeatureGrammar.fromstring("""\
     # Adverb
     ADV -> 'always' | 'never'
     
-    # Lexical
-    PRE_DET       -> 'all'
-    DET[NUM=sing] -> 'a'
-    DET[NUM=plur] -> 'these'
-    DET -> 'the'
+    
+    
+    
     PROP_N[NUM=sing]-> 'Bart' | 'Homer' | 'Lisa'
-    N[NUM=sing] -> 'shoe'   | 'kitchen'     | 'table'   | 'salad' | 'plane'  | 'flight'
-    N[NUM=plur] -> 'shoes'  | 'kitchens'    | 'tables'  | 'salad' | 'planes' | 'flights'
-    N -> 'milk' | 'morning' | 'midnight' | 'Denver' | 'Tampa' | '10'
+    
+    N[NUM=sing] -> 'shoe'   | 'kitchen'     | 'table'   | 'salad' | 'plane'  | 'flight' | 'train'
+    N[NUM=plur] -> 'shoes'  | 'kitchens'    | 'tables'  | 'salad' | 'planes' | 'flights'| 'trains'
+    N -> 'milk' | 'morning' | 'midnight' | 'Edinburgh' | 'London' | '9' | '10' | 'breakfast'
     
     # Auxiliary
     AUX[FORM=base, NUM=sing]     -> 'does'
@@ -99,7 +113,8 @@ whom does Homer serve salad
 whom do Homer and Lisa serve
 what salad does Bart think Homer serves Lisa
 did the plane leave
-all the morning flights from Denver to Tampa leave before 10
+all the morning trains from Edinburgh to London leave before 10
+all flights that serve breakfast leave at 9
 """
 sents = text.splitlines()
 for sent in sents:
