@@ -64,11 +64,8 @@ ugrammar = FeatureGrammar.fromstring("""\
     AUX[FORM=pastpart, NUM=sing] -> 'has'
     AUX[FORM=pastpart, NUM=plur] -> 'have'
     
-    ######## Not #######################
-    NOT -> 'not'
-    
     ######## Modal ######################
-    MODP[NUM=plur] -> MOD AUX[NUM=plur] | MOD NOT AUX[NUM=plur]
+    MODP[NUM=plur] -> MOD AUX[NUM=plur] | MOD 'not' AUX[NUM=plur]
     MOD -> 'may'
     
     ######################################################################################
