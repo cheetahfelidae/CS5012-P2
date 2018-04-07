@@ -4,14 +4,51 @@ from nltk import FeatureChartParser
 ugrammar = FeatureGrammar.fromstring("""\
     # Sentence
     S -> NP[NUM=?n] VP[NUM=?n] 
-    S -> WH AUX[NUM=?n] NP[NUM=?n] VP | WH NP[NUM=?n] AUX[NUM=?n] NP[NUM=?n] VP | WH NP[NUM=?n] VP S
+    S -> WH AUX[FORM=?t, NUM=?n] NP[NUM=?n] VP | WH NP[NUM=?n] AUX[FORM=?t, NUM=?n] NP[NUM=?n] VP | AUX[FORM=?t, NUM=?n] NP[NUM=?n] VP | WH NP[NUM=?n] VP S
     
     # WH-questions
     WH -> 'what' | 'when' | 'where' | 'why' | 'whom'
     
+    # Noun
+    NP[NUM=?n]   -> PRE_DET NP[NUM=?n]| DET[NUM=?n] NOM | NOM
+    NP[NUM=plur] -> PROP_N[NUM=?n] CONJ NP[NUM=?n]
+    # Nominal
+    NOM -> NOM PP | NOM GER_P | NOM N[NUM=?n]
+    NOM -> ADJ NOM | PROP_N[NUM=?n] | N[NUM=?n] | GER_P
+    
+    # Gerund
+    GER_P -> GER PP | GER
+    GER -> IV[FORM=prespart] | TV[FORM=prespart] NP
+    
+    # Adjective
+    ADJ -> 'blue' | 'healthy' | 'green'
+    
+    # Preposition
+    PP  -> P NP
+    P   -> 'in' | 'before' | 'on' | 'from' | 'to'
+    
+    # Conjunction
+    CONJ -> 'and'
+    
+    # Adverb
+    ADV -> 'always' | 'never'
+    
+    # Lexical
+    PRE_DET       -> 'all'
+    DET[NUM=sing] -> 'a'
+    DET[NUM=plur] -> 'these'
+    DET -> 'the'
+    PROP_N[NUM=sing]-> 'Bart' | 'Homer' | 'Lisa'
+    N[NUM=sing] -> 'shoe'   | 'kitchen'     | 'table'   | 'salad' | 'plane'  | 'flight'
+    N[NUM=plur] -> 'shoes'  | 'kitchens'    | 'tables'  | 'salad' | 'planes' | 'flights'
+    N -> 'milk' | 'morning' | 'midnight' | 'Denver' | 'Tampa' | '10'
+    
     # Auxiliary
-    AUX[NUM=sing] -> 'does' | 'has'
-    AUX[NUM=plur] -> 'do'   | 'have'
+    AUX[FORM=base, NUM=sing]     -> 'does'
+    AUX[FORM=base, NUM=plur]     -> 'do'
+    AUX[FORM=pret]               -> 'did'
+    AUX[FORM=pastpart, NUM=sing] -> 'has'
+    AUX[FORM=pastpart, NUM=plur] -> 'have'
     
     # Not
     NOT -> 'not'
@@ -20,52 +57,20 @@ ugrammar = FeatureGrammar.fromstring("""\
     MODP[NUM=plur] -> MOD AUX[NUM=plur] | MOD NOT AUX[NUM=plur]
     MOD -> 'may'
     
-    # Noun
-    NP[NUM=?n]   -> NOM | DET[NUM=?n] NOM | PROP_N[NUM=?n]
-    NP[NUM=plur] -> PROP_N[NUM=?n] CONJ NP[NUM=?n]
-    # Nominal
-    NOM -> NOM PP
-    NOM -> ADJ NOM | N[NUM=?n] | GER
-    
-    # Gerund
-    GER -> IV[FORM=pastpart] | TV[FORM=prespart] NP
-    
-    # Adjective
-    ADJ -> 'blue' | 'healthy' | 'green'
-    
-    # Preposition
-    PP  -> P NP
-    P   -> 'in' | 'before' | 'on'
-    
-    # Conjunction
-    CONJ -> 'and'
-    
     # Verb
     VP[FORM=?t, NUM=?n] -> ADV VP[FORM=?t, NUM=?n] | MODP[NUM=plur] VP[FORM=?t, NUM=plur]
-    VP[FORM=?t, NUM=?n] -> IV[FORM=?t, NUM=?n]
+    VP[FORM=?t, NUM=?n] -> IV[FORM=?t, NUM=?n] | IV[FORM=?t, NUM=?n] PP
     VP[FORM=?t, NUM=?n] -> TV[FORM=?t, NUM=?n] NP | TV[FORM=?t, NUM=?n] NP NP | TV[FORM=?t, NUM=?n] S 
     
-    # Adverb
-    ADV -> 'always' | 'never'
-    
-    # Lexical
-    DET[NUM=sing] -> 'a'
-    DET[NUM=plur] -> 'these'
-    DET -> 'the'
-    PROP_N[NUM=sing]-> 'Bart' | 'Homer' | 'Lisa'
-    N[NUM=sing] -> 'shoe'   | 'kitchen'     | 'table'   | 'salad'
-    N[NUM=plur] -> 'shoes'  | 'kitchens'    | 'tables'  | 'salad'
-    N -> 'milk' | 'midnight'
-    
-    IV[FORM=base, NUM=plur]     -> 'drink'      | 'serve'   | 'laugh'
-    TV[FORM=base, NUM=plur]     -> 'drink'      | 'wear'    | 'serve'   | 'think' | 'like' | 'see'
-    IV[FORM=vbz,  NUM=sing]     -> 'drinks'     | 'serves'  | 'laughs'
-    TV[FORM=vbz,  NUM=sing]     -> 'drinks'     | 'wears'   | 'serves'  | 'thinks' | 'likes' | 'sees'
-    IV[FORM=pret]               -> 'drank'      | 'served'  | 'laughed'
-    TV[FORM=pret]               -> 'drank'      | 'wore'    | 'served'  | 'thought' | 'liked' | 'saw'
-    IV[FORM=pastpart]           -> 'drunk'      | 'served'  | 'laughed'
-    TV[FORM=pastpart]           -> 'drunk'      | 'worn'    | 'served'  | 'thought' | 'liked' | 'seen'
-    IV[FORM=prespart]           -> 'drinking'   | 'serving' | 'laughing'
+    IV[FORM=base, NUM=plur]     -> 'drink'      | 'serve'   | 'laugh'    | 'leave'
+    TV[FORM=base, NUM=plur]     -> 'drink'      | 'wear'    | 'serve'    | 'think' | 'like' | 'see'
+    IV[FORM=vbz,  NUM=sing]     -> 'drinks'     | 'serves'  | 'laughs'   | 'leaving'
+    TV[FORM=vbz,  NUM=sing]     -> 'drinks'     | 'wears'   | 'serves'   | 'thinks' | 'likes' | 'sees'
+    IV[FORM=pret]               -> 'drank'      | 'served'  | 'laughed'  | 'left'
+    TV[FORM=pret]               -> 'drank'      | 'wore'    | 'served'   | 'thought' | 'liked' | 'saw'
+    IV[FORM=pastpart]           -> 'drunk'      | 'served'  | 'laughed'  | 'left'
+    TV[FORM=pastpart]           -> 'drunk'      | 'worn'    | 'served'   | 'thought' | 'liked' | 'seen'
+    IV[FORM=prespart]           -> 'drinking'   | 'serving' | 'laughing' | 'leaving'
     TV[FORM=prespart]           -> 'drinking'   | 'wearing' | 'serving'  | 'thinking' | 'liking' | 'seeing'
 """)
 
@@ -93,6 +98,8 @@ what salad does Bart serve
 whom does Homer serve salad
 whom do Homer and Lisa serve
 what salad does Bart think Homer serves Lisa
+did the plane leave
+all the morning flights from Denver to Tampa leave before 10
 """
 sents = text.splitlines()
 for sent in sents:
