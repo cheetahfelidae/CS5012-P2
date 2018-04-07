@@ -7,7 +7,7 @@ ugrammar = FeatureGrammar.fromstring("""\
     S -> WH AUX[NUM=?n] NP[NUM=?n] VP | WH NP[NUM=?n] AUX[NUM=?n] NP[NUM=?n] VP | WH NP[NUM=?n] VP S
     
     # WH-questions
-    WH -> 'what' | 'when' | 'where' | 'why'
+    WH -> 'what' | 'when' | 'where' | 'why' | 'whom'
     
     # Auxiliary
     AUX[NUM=sing] -> 'does' | 'has'
