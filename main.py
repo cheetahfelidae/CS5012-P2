@@ -3,17 +3,21 @@ from nltk import FeatureChartParser
 
 ugrammar = FeatureGrammar.fromstring("""\
     # Sentence
-    S -> NP[NUM=?n] VP[NUM=?n] | WH AUX[NUM=?n] NP[NUM=?n] VP | WH NP[NUM=?n] VP S
+    S -> NP[NUM=?n] VP[NUM=?n] 
+    S -> WH AUX[NUM=?n] NP[NUM=?n] VP | WH NP[NUM=?n] AUX[NUM=?n] NP[NUM=?n] VP | WH NP[NUM=?n] VP S
     
     # WH-questions
-    WH -> 'when'
+    WH -> 'what' | 'when' | 'where' | 'why'
     
     # Auxiliary
     AUX[NUM=sing] -> 'does' | 'has'
     AUX[NUM=plur] -> 'do'   | 'have'
     
+    # Not
+    NOT -> 'not'
+    
     # Modal
-    MODP[NUM=plur] -> MOD AUX[NUM=plur]
+    MODP[NUM=plur] -> MOD AUX[NUM=plur] | MOD NOT AUX[NUM=plur]
     MOD -> 'may'
     
     # Noun
@@ -53,16 +57,16 @@ ugrammar = FeatureGrammar.fromstring("""\
     N[NUM=plur] -> 'shoes'  | 'kitchens'    | 'tables'  | 'salad'
     N -> 'milk' | 'midnight'
     
-    IV[FORM=base, NUM=plur]     -> 'laugh'
-    TV[FORM=base, NUM=plur]     -> 'drink'      | 'wear'    | 'serve'   | 'think' | 'like'
-    IV[FORM=vbz,  NUM=sing]     -> 'laughs'
-    TV[FORM=vbz,  NUM=sing]     -> 'drinks'     | 'wears'   | 'serves'  | 'thinks' | 'likes'
-    IV[FORM=pret]               -> 'laughed'
-    TV[FORM=pret]               -> 'drank'      | 'wore'    | 'served'  | 'thought' | 'liked'
-    IV[FORM=pastpart]           -> 'laughed'
-    TV[FORM=pastpart]           -> 'drunk'      | 'worn'    | 'served'  | 'thought' | 'liked'
-    IV[FORM=prespart]           -> 'laughing'
-    TV[FORM=prespart]           -> 'drinking'   | 'wearing'    | 'serving'  | 'thinking' | 'liking'
+    IV[FORM=base, NUM=plur]     -> 'drink'      | 'serve'   | 'laugh'
+    TV[FORM=base, NUM=plur]     -> 'drink'      | 'wear'    | 'serve'   | 'think' | 'like' | 'see'
+    IV[FORM=vbz,  NUM=sing]     -> 'drinks'     | 'serves'  | 'laughs'
+    TV[FORM=vbz,  NUM=sing]     -> 'drinks'     | 'wears'   | 'serves'  | 'thinks' | 'likes' | 'sees'
+    IV[FORM=pret]               -> 'drank'      | 'served'  | 'laughed'
+    TV[FORM=pret]               -> 'drank'      | 'wore'    | 'served'  | 'thought' | 'liked' | 'saw'
+    IV[FORM=pastpart]           -> 'drunk'      | 'served'  | 'laughed'
+    TV[FORM=pastpart]           -> 'drunk'      | 'worn'    | 'served'  | 'thought' | 'liked' | 'seen'
+    IV[FORM=prespart]           -> 'drinking'   | 'serving' | 'laughing'
+    TV[FORM=prespart]           -> 'drinking'   | 'wearing' | 'serving'  | 'thinking' | 'liking' | 'seeing'
 """)
 
 uparser = FeatureChartParser(ugrammar)
