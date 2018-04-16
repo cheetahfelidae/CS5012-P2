@@ -2,134 +2,146 @@ from nltk.grammar import FeatureGrammar
 from nltk import FeatureChartParser
 
 ugrammar = FeatureGrammar.fromstring("""\
-    # Sentence
-    S -> NP[NUM=?n] VP[NUM=?n] 
-    S -> WH AUX[FORM=?t, NUM=?n] NP[NUM=?n] VP | WH NP[NUM=?n] AUX[FORM=?t, NUM=?n] NP[NUM=?n] VP | WH NP[NUM=?n] VP S
-    S ->    AUX[FORM=?t, NUM=?n] NP[NUM=?n] VP
+    S -> NP[NUM=?n] VP[NUM=?n]
+    S -> PP S
+    S -> WH-NP AUX[NUM=?n] NP VP
+    NP[NUM=?n] -> PROP_N[NUM=?n] | DET[NUM=?n] NOM[NUM=?n] | PROP_N[NUM=?n] GER_P
+    NP[NUM=pl] -> NP[NUM=?n] CONJ NP[NUM=?n]
     
-    # WH-questions
-    WH -> 'what' | 'when' | 'where' | 'why' | 'who' | 'whom'
+    VP[SUBCAT=?rest] -> VP[TENSE=?t, SUBCAT=[HEAD=?arg, TAIL=?rest]] ARG[CAT=?arg] | V[NUM=?n, SUBCAT=?rest]
+    VP[SUBCAT=?rest] -> ADV_P V[NUM=?n, SUBCAT=?rest] | V[NUM=?n, SUBCAT=?rest] ADV_P 
+    VP[SUBCAT=?rest] -> MODP VP[TENSE=?t, SUBCAT=[HEAD=?arg, TAIL=?rest]] ARG[CAT=?arg]
+    VP[SUBCAT=?rest] -> VTB VP[SUBCAT=[HEAD=?arg, TAIL=?rest]] ARG[CAT=?arg]
+    VP[SUBCAT=?rest] -> VTB VP[SUBCAT=?rest]
     
-    ######################################################################################
-    ################################### Noun Phrase ######################################
-    ######################################################################################
-    NP[NUM=?n]   -> PRE_DET NP[NUM=?n]| DET[NUM=?n] NOM | NOM
-    NP[NUM=plur] -> PROP_N[NUM=?n] CONJ NP[NUM=?n]
+    NOM[NUM=?n] -> ADJ_P NOM[NUM=?n] | N[NUM=?n] | N[NUM=?n] PP | GER_P | NOM N[NUM=?n]
     
-    ######### Predeterminers #########
-    PRE_DET       -> 'all' | 'most'
+    GER_P -> GER NP | GER NOM
+    GER -> V[FORM=prespart, SUBCAT=nil]
     
-    ######### Determiners #############
-    DET[NUM=sing] -> 'a' | 'that'
-    DET[NUM=plur] -> 'these'
-    DET -> 'the'
+    MODP -> MOD AUX[NUM=pl] |  MOD 'not' AUX[NUM=pl]
     
-    ######### Adjective ###############
-    ADJ -> 'blue' | 'healthy' | 'green' | 'friendly'
+    ADJ_P -> ADJ | ADJ ADJ_P
+    ADV_P -> ADV | ADV ADV_P
+    PP -> PREP NP | PREP S | PREP NOM
+    WH-NP -> WH | WH ARG[CAT=?arg] 
     
-    ######### Nominal #################
-    NOM -> NOM PP | NOM REL_CL | NOM GER_P | NOM N[NUM=?n]
-    NOM -> ADJ NOM | PROP_N[NUM=?n] | N[NUM=?n] | GER_P
+    ARG[CAT=np] -> NP
+    ARG[CAT=pp] -> PP
+    ARG[CAT=nom] -> NOM
+    ARG[CAT=s] -> S
     
-    ######## Pronouns ##################
-    PROP_N[NUM=sing]-> 'Bart' | 'Homer' | 'Lisa'
+    ################# Lexicon #################
     
-    ######## Nouns #####################
-    N[NUM=sing] -> 'shoe'   | 'kitchen'     | 'table'   | 'salad' | 'plane'  | 'flight' | 'train'  | 'house' | 'person'
-    N[NUM=plur] -> 'shoes'  | 'kitchens'    | 'tables'  | 'salad' | 'planes' | 'flights'| 'trains' | 'houses'| 'people'
-    N -> 'milk' | 'morning' | 'midnight' | 'Edinburgh' | 'London' | '9' | '10' | 'breakfast'
+    ################# VERB ####################
+    ###########################################
     
-    ######### Gerund Phrase ############
-    GER_P -> GER PP | GER
-    GER -> IV[FORM=prespart] | TV[FORM=prespart] NP
+    ############### PRESENT ###################
+    #########----- Intransitive -----##########
+    V[TENSE=pres, NUM=sg, SUBCAT=nil]-> 'laughs' | 'smiles' | 'walks' | 'serves' | 'drinks'
+    V[TENSE=pres, NUM=pl, SUBCAT=nil] -> 'laugh' | 'smile' | 'walk' | 'serve' |'drink'
     
-    ######### Preposition Phrase #######
-    PP  ->  P NP
-    P   -> 'in' | 'on' | 'at' | 'before' | 'after' | 'from' | 'to'
+    #########----- Transitive ------###########
+    V[TENSE=pres, NUM=sg, SUBCAT=[HEAD=s,TAIL=nil]] -> 'thinks' | 'believes'
+    V[TENSE=pres, NUM=pl, SUBCAT=[HEAD=s,TAIL=nil]] -> 'think' | 'believe'
     
-    ######## Relative Clause ###########
-    REL_CL -> REL_P VP
-    REL_P  -> 'that' | 'who'
     
-    ######## Conjunction ###############
-    CONJ -> 'and'
+    V[TENSE=pres, NUM=sg, SUBCAT=[HEAD=np,TAIL=nil]] ->'serves' | 'drinks' 
+    V[TENSE=pres, NUM=pl, SUBCAT=[HEAD=np,TAIL=nil]] ->'serve' | 'drink' 
     
-    ######## Adverb ####################
-    ADV -> 'always' | 'never'
+    V[TENSE=pres, NUM=sg, SUBCAT=[HEAD=pp,TAIL=nil]] ->'walks' | 'teaches' 
+    V[TENSE=pres, NUM=pl, SUBCAT=[HEAD=pp,TAIL=nil]] ->'walk' | 'teach' 
     
-    ######## Auxiliary #################
-    AUX[FORM=base]               -> 'do'
-    AUX[FORM=vbz]                -> 'does'
-    AUX[FORM=pret]               -> 'did' 
-    AUX[FORM=pastpart, NUM=sing] -> 'has'
-    AUX[FORM=pastpart, NUM=plur] -> 'have'
+    V[TENSE=pres, NUM=pl, SUBCAT=[HEAD=nom,TAIL=nil]] ->'drink' | 'wear' | 'serve' | 'like'
+    V[TENSE=pres, NUM=sg, SUBCAT=[HEAD=nom,TAIL=nil]] ->'drinks' | 'wears' | 'serves' | 'likes'
     
-    ######## Not #######################
-    NOT -> 'not'
+    ######### primary & secondary ########
+    V[TENSE=pres, NUM=sg, SUBCAT=[HEAD=np, TAIL=[HEAD=np,TAIL=nil]]] -> 'serves'
+    V[TENSE=pres, NUM=pl, SUBCAT=[HEAD=np, TAIL=[HEAD=np,TAIL=nil]]] -> 'serve'
+    V[TENSE=pres, NUM=pl, SUBCAT=[HEAD=nom, TAIL=[HEAD=np,TAIL=nil]]] -> 'serve'
+    V[TENSE=pres, NUM=pl, SUBCAT=[HEAD=s, TAIL=[HEAD=np,TAIL=nil]]] -> 'think' | 'believe'
     
-    ######## Modal ######################
-    MODP[NUM=plur] -> MOD AUX[NUM=plur] | MOD NOT AUX[NUM=plur]
+    ################# Past ####################
+    #########----- Intransitive -----##########
+    V[TENSE=past, SUBCAT=nil] -> 'laughed' | 'smiled' | 'walked'
+    
+    #########----- Transitive ------###########
+    V[TENSE=past, SUBCAT=[HEAD=np,TAIL=nil]] -> 'drank' | 'wore' | 'served'
+    V[TENSE=past, SUBCAT=[HEAD=nom,TAIL=nil]] ->'drank' | 'wore' | 'served'
+    V[TENSE=pastpart, SUBCAT=[HEAD=np,TAIL=nil]] ->'drunk' | 'worn' | 'served' | 'seen'
+    V[TENSE=pastpart, SUBCAT=[HEAD=nom,TAIL=nil]] ->'drunk' | 'worn' | 'served' | 'seen'
+    
+    
+    ############### PRESENT CONT. #############
+    V[TENSE=prescon, FORM=prespart , SUBCAT=[HEAD=nom,TAIL=nil]] -> 'drinking' | 'wearing' | 'using' | 'fighting'
+    V[TENSE=prescon, FORM=prespart , SUBCAT=[HEAD=np,TAIL=nil]] -> 'drinking' | 'wearing' | 'using' | 'fighting'
+    V[TENSE=prescon, FORM=prespart , SUBCAT=[HEAD=pp,TAIL=nil]] -> 'drinking' | 'fighting' | 'walking'
+    
+    ################# GERUND #################
+    V[FORM=prespart, SUBCAT=nil] -> 'drinking' | 'smiling' | 'wearing' | 'crying' | 'flying'
+    
+    
+    ################## NOUN ###################
+    ###########################################
+    PROP_N[NUM=sg] -> 'Homer' | 'Bart' | 'Lisa'
+    N[NUM=sg] -> 'milk' | 'salad' | 'midnight' | 'kitchen' | 'table' | 'robot' | 'sky'
+    N[NUM=pl] -> 'shoes' | 'tables' | 'robots'
+    
+    ################## Modal ##################
     MOD -> 'may'
     
-    ######################################################################################
-    ################################### Verb #############################################
-    ######################################################################################
-    VP[FORM=?t, NUM=?n] -> ADV VP[FORM=?t, NUM=?n] | MODP[NUM=plur] VP[FORM=?t, NUM=plur]
-    VP[FORM=?t, NUM=?n] -> IV[FORM=?t, NUM=?n] | IV[FORM=?t, NUM=?n] PP
-    VP[FORM=?t, NUM=?n] -> TV[FORM=?t, NUM=?n] NP | TV[FORM=?t, NUM=?n] NP NP | TV[FORM=?t, NUM=?n] S 
-    VP[FORM=?t, NUM=?n] -> VTB[FORM=?t, NUM=?n] ADJ
+    ################ Determiner ###############
+    DET[NUM=sg] -> 'a' | 'the' | 'that'
+    DET[NUM=pl] -> 'the' | 'these' | 'those'
     
-    ######## Verb To Be ################
-    VTB[FORM=base, NUM=plur] -> 'are'
-    VTB[FORM=base, NUM=sing] -> 'is' | 'am'
-    VTB[FORM=vbz, NUM=plur]  -> 'were'
-    VTB[FORM=vbz, NUM=sing]  -> 'was'
-    VTB[FORM=pret]           -> 'been'
-    VTB[FORM=prespart]       -> 'being'
+    ################ Conjunction ##############
+    CONJ -> 'and'
     
-    ######## Intransitive Verb #########
-    IV[FORM=base, NUM=plur]     -> 'drink'      | 'serve'   | 'laugh'    | 'leave'  | 'live'
-    IV[FORM=vbz,  NUM=sing]     -> 'drinks'     | 'serves'  | 'laughs'   | 'leaving'| 'living'    
-    IV[FORM=pret]               -> 'drank'      | 'served'  | 'laughed'  | 'left'   | 'lived'
-    IV[FORM=pastpart]           -> 'drunk'      | 'served'  | 'laughed'  | 'left'   | 'lived'
-    IV[FORM=prespart]           -> 'drinking'   | 'serving' | 'laughing' | 'leaving'| 'living'
+    ############ Adverb & Adjective ############
+    ADJ -> 'blue' | 'healthy' | 'green' | 'same'
+    ADV -> 'always' | 'never' | 'intensely'
     
-    ######## Transitive Verb ###########
-    TV[FORM=base, NUM=plur]     -> 'drink'      | 'wear'    | 'serve'    | 'think'   | 'like'  | 'see'
-    TV[FORM=vbz,  NUM=sing]     -> 'drinks'     | 'wears'   | 'serves'   | 'thinks'  | 'likes' | 'sees'
-    TV[FORM=pret]               -> 'drank'      | 'wore'    | 'served'   | 'thought' | 'liked' | 'saw'
-    TV[FORM=pastpart]           -> 'drunk'      | 'worn'    | 'served'   | 'thought' | 'liked' | 'seen'
-    TV[FORM=prespart]           -> 'drinking'   | 'wearing' | 'serving'  | 'thinking'| 'liking'| 'seeing'
+    ############## Preposition ##################
+    PREP -> 'in' | 'before' | 'when' | 'on' | 'beyond'
+    
+    AUX[NUM=sg] -> 'does' | 'has'
+    AUX[NUM=pl] -> 'do' | 'have'
+    VTB[NUM=sg] -> 'is'
+    VTB[NUM=pl] -> 'are'
+    
+    WH -> 'when' | 'what' | 'where' | 'whom'
 """)
 
 uparser = FeatureChartParser(ugrammar)
 
 text = """\
-Bart laughs
-Homer laughed
-Bart and Lisa drink milk
-Bart wears blue shoes
-Lisa serves Bart a healthy green salad
-Homer serves Lisa
-Bart always drinks milk
-Lisa thinks Homer thinks Bart drinks milk
-Homer never drinks milk in the kitchen before midnight
-when Homer drinks milk Bart laughs
-when does Lisa drink the milk on the table
-when do Lisa and Bart wear shoes
-Bart likes drinking milk
-Lisa may have drunk milk
-Lisa may have seen Bart drinking milk
-Lisa may not have seen Bart drinking milk
-what does Homer drink
-what salad does Bart serve
-whom does Homer serve salad
-whom do Homer and Lisa serve
-what salad does Bart think Homer serves Lisa
-did the plane leave
-all the morning trains from Edinburgh to London leave before 10
-most flights that serve breakfast leave at 9
-the people who live in the house are friendly
+    Bart laughs
+    Homer laughed
+    Bart and Lisa drink milk
+    Bart wears blue shoes
+    Lisa serves Bart a healthy green salad
+    Homer serves Lisa
+    Bart always drinks milk
+    Lisa thinks Homer thinks Bart drinks milk
+    Homer never drinks milk in the kitchen before midnight
+    when Homer drinks milk Bart laughs
+    when does Lisa drink the milk on the table
+    when do Lisa and Bart wear shoes
+    Bart thinks Lisa drinks milk on the table
+    
+    Bart likes drinking milk
+    Lisa may have drunk milk
+    Lisa may have seen Bart drinking milk
+    Lisa may not have seen Bart drinking milk
+    what does Homer drink
+    what salad does Bart serve
+    whom does Homer serve salad
+    whom do Homer and Lisa serve
+    what salad does Bart think Homer serves Lisa
+    Lisa is drinking milk
+    Lisa and Bart are wearing the same blue shoes
+    those robots are fighting intensely beyond the sky
+    Bart wears milk beyond the healthy kitchen
 """
 sents = text.splitlines()
 for sent in sents:
