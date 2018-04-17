@@ -7,7 +7,7 @@ ugrammar = FeatureGrammar.fromstring("""\
     ######################################################################################################
     S -> NP[NUM=?n] VP[NUM=?n] | PP S
     S -> WH_NP AUX[FORM=?f, NUM=?n] NP[NUM=?n] VP
-    S ->       AUX[FORM=?t, NUM=?n] NP[NUM=?n] VP
+    S ->       AUX[FORM=?f, NUM=?n] NP[NUM=?n] VP
     
     ######## WH-Question ###########
     WH_NP -> WH | WH ARG[CAT=?arg] 
@@ -16,10 +16,10 @@ ugrammar = FeatureGrammar.fromstring("""\
     ######################################################################################################
     ############################################## NOUN PHRASE ###########################################
     ######################################################################################################
-    NP[NUM=?n]   -> PRE_DET NP[NUM=?n] | PROP_N[NUM=?n] | DET[NUM=?n] NOM[NUM=?n] | PROP_N[NUM=?n] GER_P | NOM
-    NP[NUM=plur] -> NP[NUM=?n] CONJ NP[NUM=?n]
+    NP[NUM=?n]   -> PRE_DET NP[NUM=?n] | PROP_N[NUM=?n] | PROP_N[NUM=?n] GER_P | DET[NUM=?n] NOM[NUM=?n] | NOM[NUM=?n]
+    NP[NUM=plur] -> NP CONJ NP
     
-    NOM[NUM=?n]  -> ADJ_P NOM[NUM=?n] | NOM REL_CL | N[NUM=?n] | N[NUM=?n] PP | GER_P | NOM N[NUM=?n] | NOM[NUM=?n] PP
+    NOM[NUM=?n]  -> ADJ_P NOM[NUM=?n] | NOM[NUM=?n] REL_CL | N[NUM=?n] | N[NUM=?n] PP | GER_P | NOM[NUM=?n] N[NUM=?n] | NOM[NUM=?n] PP
     
     ########## Predeterminer ##########
     PRE_DET -> 'all' | 'most'
@@ -27,31 +27,33 @@ ugrammar = FeatureGrammar.fromstring("""\
     ############# Pronoun #############
     PROP_N[NUM=sing] -> 'Homer' | 'Bart' | 'Lisa'
     
-    N[NUM=sing] -> 'salad'  | 'midnight' | 'kitchen' | 'table' | 'robot' | 'sky' | 'plane' | 'house'
-    N[NUM=plur] -> 'shoes'  | 'tables'  | 'robots' | 'trains' | 'flights' | 'people'
-    N -> 'milk' | 'morning' | 'midnight' | 'Edinburgh' | 'London' | '8' |'9' | '10' | 'breakfast'
-    
     ######## Relative Clause ###########
-    REL_CL -> REL_P VP | 'that' S
+    REL_CL -> REL_P VP | COMP S
+    COMP   -> 'that'
     REL_P  -> 'that' | 'who'
     
+    ############# Gerund ##############
+    GER_P -> GER NP | GER NOM
+    GER -> V[FORM=prespart, SUBCAT=nil]
+    
+    ########### Noun Lexicon ##########
+    N[NUM=sing] -> 'salad'  | 'midnight' | 'kitchen' | 'table'  | 'robot'   | 'sky' | 'plane' | 'house'
+    N[NUM=plur] -> 'shoes'  | 'tables'   | 'robots'  | 'trains' | 'flights' | 'people'
+    N -> 'milk' | 'morning' | 'midnight' | 'Edinburgh' | 'London' | '8' |'9' | '10' | 'breakfast'
+    
+    ######################################################################################################
+    ############################################## VERB PHRASE ###########################################
+    ######################################################################################################
     VP[SUBCAT=?rest] -> VP[TENSE=?t, SUBCAT=[HEAD=?arg, TAIL=?rest]] ARG[CAT=?arg] | V[NUM=?n, SUBCAT=?rest]
     VP[SUBCAT=?rest] -> ADV_P V[NUM=?n, SUBCAT=?rest] | V[NUM=?n, SUBCAT=?rest] ADV_P 
     VP[SUBCAT=?rest] -> MODP VP[TENSE=?t, SUBCAT=[HEAD=?arg, TAIL=?rest]] ARG[CAT=?arg]
     VP[SUBCAT=?rest] -> VTB VP[SUBCAT=[HEAD=?arg, TAIL=?rest]] ARG[CAT=?arg]
     VP[SUBCAT=?rest] -> VTB VP[SUBCAT=?rest]
     VP[SUBCAT=nil] -> VTB ADJ_P
-    VP[SUBCAT=nil] -> VC[TENSE=?t] REL_CL
-    
-    GER_P -> GER NP | GER NOM
-    GER -> V[FORM=prespart, SUBCAT=nil]
     
     MODP -> MOD AUX[FORM=?f, NUM=plur] |  MOD 'not' AUX[FORM=?f, NUM=plur]
     
-    ADJ_P -> ADJ | ADJ ADJ_P
-    ADV_P -> ADV | ADV ADV_P
     PP -> P NP | P S | P NOM
-    
     
     ARG[CAT=np] -> NP
     ARG[CAT=pp] -> PP
@@ -59,63 +61,59 @@ ugrammar = FeatureGrammar.fromstring("""\
     ARG[CAT=s] -> S
     ARG[CAT=cl] -> REL_CL
     
-    ################# Lexicon #################
-    
-    ################# VERB ####################
-    ###########################################
     
     ############### PRESENT ###################
     #########----- Intransitive -----##########
-    V[TENSE=pres, NUM=sing, SUBCAT=nil]-> 'laughs' | 'smiles' | 'walks' | 'serves' | 'drinks' | 'leaves' 
-    V[TENSE=pres, NUM=plur, SUBCAT=nil] -> 'laugh' | 'smile' | 'walk' | 'serve' |'drink' | 'leave' 
-    V[TENSE=pres, NUM=sing, SUBCAT=[HEAD=pp, TAIL=nil]] -> 'leaves' | 'lives'
-    V[TENSE=pres, NUM=plur, SUBCAT=[HEAD=pp, TAIL=nil]] -> 'leave'  | 'live'
+    V[FORM=pres, NUM=sing, SUBCAT=nil]-> 'laughs' | 'smiles' | 'walks' | 'serves' | 'drinks' | 'leaves' 
+    V[FORM=pres, NUM=plur, SUBCAT=nil] -> 'laugh' | 'smile' | 'walk' | 'serve' |'drink' | 'leave' 
+    V[FORM=pres, NUM=sing, SUBCAT=[HEAD=pp, TAIL=nil]] -> 'leaves' | 'lives'
+    V[FORM=pres, NUM=plur, SUBCAT=[HEAD=pp, TAIL=nil]] -> 'leave'  | 'live'
     
     #########----- Transitive ------###########
-    V[TENSE=pres, NUM=sing, SUBCAT=[HEAD=s,TAIL=nil]] -> 'thinks' | 'believes'
-    V[TENSE=pres, NUM=plur, SUBCAT=[HEAD=s,TAIL=nil]] -> 'think' | 'believe'
+    V[FORM=pres, NUM=sing, SUBCAT=[HEAD=s,TAIL=nil]] -> 'thinks' | 'believes'
+    V[FORM=pres, NUM=plur, SUBCAT=[HEAD=s,TAIL=nil]] -> 'think' | 'believe'
     
     
-    V[TENSE=pres, NUM=sing, SUBCAT=[HEAD=np,TAIL=nil]] ->'serves' | 'drinks' 
-    V[TENSE=pres, NUM=plur, SUBCAT=[HEAD=np,TAIL=nil]] ->'serve' | 'drink' 
+    V[FORM=pres, NUM=sing, SUBCAT=[HEAD=np,TAIL=nil]] ->'serves' | 'drinks' 
+    V[FORM=pres, NUM=plur, SUBCAT=[HEAD=np,TAIL=nil]] ->'serve' | 'drink' 
     
-    V[TENSE=pres, NUM=sing, SUBCAT=[HEAD=pp,TAIL=nil]] ->'walks' | 'teaches' 
-    V[TENSE=pres, NUM=plur, SUBCAT=[HEAD=pp,TAIL=nil]] ->'walk' | 'teach' 
+    V[FORM=pres, NUM=sing, SUBCAT=[HEAD=pp,TAIL=nil]] ->'walks' | 'teaches' 
+    V[FORM=pres, NUM=plur, SUBCAT=[HEAD=pp,TAIL=nil]] ->'walk' | 'teach' 
     
-    V[TENSE=pres, NUM=plur, SUBCAT=[HEAD=nom,TAIL=nil]] ->'drink' | 'wear' | 'serve' | 'like'
-    V[TENSE=pres, NUM=sing, SUBCAT=[HEAD=nom,TAIL=nil]] ->'drinks' | 'wears' | 'serves' | 'likes'
+    V[FORM=pres, NUM=plur, SUBCAT=[HEAD=nom,TAIL=nil]] ->'drink' | 'wear' | 'serve' | 'like'
+    V[FORM=pres, NUM=sing, SUBCAT=[HEAD=nom,TAIL=nil]] ->'drinks' | 'wears' | 'serves' | 'likes'
     
     ######### primary & secondary ########
-    V[TENSE=pres, NUM=sing, SUBCAT=[HEAD=np, TAIL=[HEAD=np,TAIL=nil]]] -> 'serves'
-    V[TENSE=pres, NUM=plur, SUBCAT=[HEAD=np, TAIL=[HEAD=np,TAIL=nil]]] -> 'serve'
-    V[TENSE=pres, NUM=plur, SUBCAT=[HEAD=nom, TAIL=[HEAD=np,TAIL=nil]]] -> 'serve'
-    V[TENSE=pres, NUM=plur, SUBCAT=[HEAD=s, TAIL=[HEAD=np,TAIL=nil]]] -> 'think' | 'believe'
+    V[FORM=pres, NUM=sing, SUBCAT=[HEAD=np, TAIL=[HEAD=np,TAIL=nil]]] -> 'serves'
+    V[FORM=pres, NUM=plur, SUBCAT=[HEAD=np, TAIL=[HEAD=np,TAIL=nil]]] -> 'serve'
+    V[FORM=pres, NUM=plur, SUBCAT=[HEAD=nom, TAIL=[HEAD=np,TAIL=nil]]] -> 'serve'
+    V[FORM=pres, NUM=plur, SUBCAT=[HEAD=s, TAIL=[HEAD=np,TAIL=nil]]] -> 'think' | 'believe'
     
     ################# Past ####################
     #########----- Intransitive -----##########
-    V[TENSE=past, SUBCAT=nil] -> 'laughed' | 'smiled' | 'walked'
+    V[FORM=past, SUBCAT=nil] -> 'laughed' | 'smiled' | 'walked'
     
     #########----- Transitive ------###########
-    V[TENSE=past, SUBCAT=[HEAD=np,TAIL=nil]] -> 'drank' | 'wore' | 'served'
-    V[TENSE=past, SUBCAT=[HEAD=nom,TAIL=nil]] ->'drank' | 'wore' | 'served'
-    V[TENSE=pastpart, SUBCAT=[HEAD=np,TAIL=nil]] ->'drunk' | 'worn' | 'served' | 'seen'
-    V[TENSE=pastpart, SUBCAT=[HEAD=nom,TAIL=nil]] ->'drunk' | 'worn' | 'served' | 'seen'
+    V[FORM=past, SUBCAT=[HEAD=np,TAIL=nil]] -> 'drank' | 'wore' | 'served'
+    V[FORM=past, SUBCAT=[HEAD=nom,TAIL=nil]] ->'drank' | 'wore' | 'served'
+    V[FORM=pastpart, SUBCAT=[HEAD=np,TAIL=nil]] ->'drunk' | 'worn' | 'served' | 'seen'
+    V[FORM=pastpart, SUBCAT=[HEAD=nom,TAIL=nil]] ->'drunk' | 'worn' | 'served' | 'seen'
     
     
     ############### PRESENT CONT. #############
-    V[TENSE=prescon, FORM=prespart , SUBCAT=[HEAD=nom,TAIL=nil]] -> 'drinking' | 'wearing' | 'using' | 'fighting'
-    V[TENSE=prescon, FORM=prespart , SUBCAT=[HEAD=np,TAIL=nil]] -> 'drinking' | 'wearing' | 'using' | 'fighting'
-    V[TENSE=prescon, FORM=prespart , SUBCAT=[HEAD=pp,TAIL=nil]] -> 'drinking' | 'fighting' | 'walking'
+    V[FORM=prespart, SUBCAT=[HEAD=nom, TAIL=nil]]   -> 'drinking' | 'wearing'  | 'using' | 'fighting'
+    V[FORM=prespart, SUBCAT=[HEAD=np,  TAIL=nil]]   -> 'drinking' | 'wearing'  | 'using' | 'fighting'
+    V[FORM=prespart, SUBCAT=[HEAD=pp,  TAIL=nil]]   -> 'drinking' | 'fighting' | 'walking'
     
     ################# GERUND #################
     V[FORM=prespart, SUBCAT=nil] -> 'drinking' | 'smiling' | 'wearing' | 'crying' | 'flying'
     
-    ######## Clause ####################
-    VC[TENSE=base]        -> 'say'    | 'claim'
-    VC[TENSE=base]        -> 'says'   | 'claims'
-    VC[TENSE=vbz]         -> 'said'   | 'claimed'
-    VC[TENSE=pastpart]    -> 'said'   | 'claimed'
-    VC[TENSE=prespart]    -> 'saying' | 'claiming'
+    ################# Clause #################
+    V[FORM=base,      SUBCAT=[HEAD=cl, TAIL=nil]]    -> 'say'    | 'claim'
+    V[FORM=pres,      SUBCAT=[HEAD=cl, TAIL=nil]]    -> 'says'   | 'claims'
+    V[FORM=vbz,       SUBCAT=[HEAD=cl, TAIL=nil]]    -> 'said'   | 'claimed'
+    V[FORM=pastpart,  SUBCAT=[HEAD=cl, TAIL=nil]]    -> 'said'   | 'claimed'
+    V[FORM=prespart,  SUBCAT=[HEAD=cl, TAIL=nil]]    -> 'saying' | 'claiming'
     
     
    
@@ -132,9 +130,13 @@ ugrammar = FeatureGrammar.fromstring("""\
     ################ Conjunction ##############
     CONJ -> 'and'
     
-    ############ Adverb & Adjective ############
-    ADJ -> 'blue' | 'healthy' | 'green' | 'same' | 'friendly'
-    ADV -> 'always' | 'never' | 'intensely'
+    ################# Adjective ###############
+    ADJ_P -> ADJ | ADJ ADJ_P
+    ADJ   -> 'blue' | 'healthy' | 'green' | 'same' | 'friendly'
+    
+    ################# Adverb ##################
+    ADV_P -> ADV | ADV ADV_P
+    ADV   -> 'always' | 'never' | 'intensely'
     
     ############## Preposition ##################
     P -> 'in' | 'before' | 'when' | 'on' | 'beyond' | 'from' | 'to' | 'at'
