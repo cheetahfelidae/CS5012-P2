@@ -2,18 +2,34 @@ from nltk.grammar import FeatureGrammar
 from nltk import FeatureChartParser
 
 ugrammar = FeatureGrammar.fromstring("""\
-    S -> NP[NUM=?n] VP[NUM=?n]
-    S -> PP S
-    S -> WH-NP AUX[FORM=?f, NUM=?n] NP VP
-    S -> AUX[FORM=?t, NUM=?n] NP[NUM=?n] VP
+    ######################################################################################################
+    ################################################# SENTENCE ###########################################
+    ######################################################################################################
+    S -> NP[NUM=?n] VP[NUM=?n] | PP S
+    S -> WH_NP AUX[FORM=?f, NUM=?n] NP[NUM=?n] VP
+    S ->       AUX[FORM=?t, NUM=?n] NP[NUM=?n] VP
+    
+    ######## WH-Question ###########
+    WH_NP -> WH | WH ARG[CAT=?arg] 
+    WH -> 'when' | 'what' | 'where' | 'whom'
     
     ######################################################################################################
     ############################################## NOUN PHRASE ###########################################
     ######################################################################################################
-    NP[NUM=?n] -> PRE_DET NP[NUM=?n] | PROP_N[NUM=?n] | DET[NUM=?n] NOM[NUM=?n] | PROP_N[NUM=?n] GER_P | NOM
+    NP[NUM=?n]   -> PRE_DET NP[NUM=?n] | PROP_N[NUM=?n] | DET[NUM=?n] NOM[NUM=?n] | PROP_N[NUM=?n] GER_P | NOM
     NP[NUM=plur] -> NP[NUM=?n] CONJ NP[NUM=?n]
     
-    NOM[NUM=?n] -> ADJ_P NOM[NUM=?n] | NOM REL_CL | N[NUM=?n] | N[NUM=?n] PP | GER_P | NOM N[NUM=?n] | NOM[NUM=?n] PP
+    NOM[NUM=?n]  -> ADJ_P NOM[NUM=?n] | NOM REL_CL | N[NUM=?n] | N[NUM=?n] PP | GER_P | NOM N[NUM=?n] | NOM[NUM=?n] PP
+    
+    ########## Predeterminer ##########
+    PRE_DET -> 'all' | 'most'
+    
+    ############# Pronoun #############
+    PROP_N[NUM=sing] -> 'Homer' | 'Bart' | 'Lisa'
+    
+    N[NUM=sing] -> 'salad'  | 'midnight' | 'kitchen' | 'table' | 'robot' | 'sky' | 'plane' | 'house'
+    N[NUM=plur] -> 'shoes'  | 'tables'  | 'robots' | 'trains' | 'flights' | 'people'
+    N -> 'milk' | 'morning' | 'midnight' | 'Edinburgh' | 'London' | '8' |'9' | '10' | 'breakfast'
     
     ######## Relative Clause ###########
     REL_CL -> REL_P VP | 'that' S
@@ -27,8 +43,6 @@ ugrammar = FeatureGrammar.fromstring("""\
     VP[SUBCAT=nil] -> VTB ADJ_P
     VP[SUBCAT=nil] -> VC[TENSE=?t] REL_CL
     
-    
-    
     GER_P -> GER NP | GER NOM
     GER -> V[FORM=prespart, SUBCAT=nil]
     
@@ -37,7 +51,7 @@ ugrammar = FeatureGrammar.fromstring("""\
     ADJ_P -> ADJ | ADJ ADJ_P
     ADV_P -> ADV | ADV ADV_P
     PP -> P NP | P S | P NOM
-    WH-NP -> WH | WH ARG[CAT=?arg] 
+    
     
     ARG[CAT=np] -> NP
     ARG[CAT=pp] -> PP
@@ -104,18 +118,12 @@ ugrammar = FeatureGrammar.fromstring("""\
     VC[TENSE=prespart]    -> 'saying' | 'claiming'
     
     
-    ################## NOUN ###################
-    ###########################################
-    PROP_N[NUM=sing] -> 'Homer' | 'Bart' | 'Lisa'
-    N[NUM=sing] -> 'milk'   | 'salad'   | 'midnight' | 'kitchen' | 'table' | 'robot' | 'sky' | 'plane' | 'house'
-    N[NUM=plur] -> 'shoes'  | 'tables'  | 'robots' | 'trains' | 'flights' | 'people'
-    N -> 'milk' | 'morning' | 'midnight' | 'Edinburgh' | 'London' | '8' |'9' | '10' | 'breakfast'
+   
     
     ################## Modal ##################
     MOD -> 'may'
     
-    ######### Predeterminers ##########
-    PRE_DET -> 'all' | 'most'
+    
     
     ################ Determiner ###############
     DET[NUM=sing] -> 'a' | 'the' | 'that'
@@ -140,8 +148,6 @@ ugrammar = FeatureGrammar.fromstring("""\
     
     VTB[NUM=sing] -> 'is'
     VTB[NUM=plur] -> 'are'
-    
-    WH -> 'when' | 'what' | 'where' | 'whom'
 """)
 
 uparser = FeatureChartParser(ugrammar)
