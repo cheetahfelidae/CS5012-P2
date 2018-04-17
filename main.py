@@ -24,6 +24,8 @@ ugrammar = FeatureGrammar.fromstring("""\
     VP[SUBCAT=?rest] -> MODP VP[TENSE=?t, SUBCAT=[HEAD=?arg, TAIL=?rest]] ARG[CAT=?arg]
     VP[SUBCAT=?rest] -> VTB VP[SUBCAT=[HEAD=?arg, TAIL=?rest]] ARG[CAT=?arg]
     VP[SUBCAT=?rest] -> VTB VP[SUBCAT=?rest]
+    VP[SUBCAT=nil] -> VTB ADJ_P
+    VP[SUBCAT=nil] -> VC[TENSE=?t] REL_CL
     
     
     
@@ -50,9 +52,10 @@ ugrammar = FeatureGrammar.fromstring("""\
     
     ############### PRESENT ###################
     #########----- Intransitive -----##########
-    V[TENSE=pres, NUM=sing, SUBCAT=nil]-> 'laughs' | 'smiles' | 'walks' | 'serves' | 'drinks' | 'leaves'
-    V[TENSE=pres, NUM=plur, SUBCAT=nil] -> 'laugh' | 'smile' | 'walk' | 'serve' |'drink' | 'leave'
-    V[TENSE=pres, NUM=plur, SUBCAT=[HEAD=pp, TAIL=nil]] -> 'leave'
+    V[TENSE=pres, NUM=sing, SUBCAT=nil]-> 'laughs' | 'smiles' | 'walks' | 'serves' | 'drinks' | 'leaves' 
+    V[TENSE=pres, NUM=plur, SUBCAT=nil] -> 'laugh' | 'smile' | 'walk' | 'serve' |'drink' | 'leave' 
+    V[TENSE=pres, NUM=sing, SUBCAT=[HEAD=pp, TAIL=nil]] -> 'leaves' | 'lives'
+    V[TENSE=pres, NUM=plur, SUBCAT=[HEAD=pp, TAIL=nil]] -> 'leave'  | 'live'
     
     #########----- Transitive ------###########
     V[TENSE=pres, NUM=sing, SUBCAT=[HEAD=s,TAIL=nil]] -> 'thinks' | 'believes'
@@ -93,11 +96,18 @@ ugrammar = FeatureGrammar.fromstring("""\
     ################# GERUND #################
     V[FORM=prespart, SUBCAT=nil] -> 'drinking' | 'smiling' | 'wearing' | 'crying' | 'flying'
     
+    ######## Clause ####################
+    VC[TENSE=base]        -> 'say'    | 'claim'
+    VC[TENSE=base]        -> 'says'   | 'claims'
+    VC[TENSE=vbz]         -> 'said'   | 'claimed'
+    VC[TENSE=pastpart]    -> 'said'   | 'claimed'
+    VC[TENSE=prespart]    -> 'saying' | 'claiming'
+    
     
     ################## NOUN ###################
     ###########################################
     PROP_N[NUM=sing] -> 'Homer' | 'Bart' | 'Lisa'
-    N[NUM=sing] -> 'milk'   | 'salad'   | 'midnight' | 'kitchen' | 'table' | 'robot' | 'sky' | 'plane'
+    N[NUM=sing] -> 'milk'   | 'salad'   | 'midnight' | 'kitchen' | 'table' | 'robot' | 'sky' | 'plane' | 'house'
     N[NUM=plur] -> 'shoes'  | 'tables'  | 'robots' | 'trains' | 'flights' | 'people'
     N -> 'milk' | 'morning' | 'midnight' | 'Edinburgh' | 'London' | '8' |'9' | '10' | 'breakfast'
     
@@ -115,7 +125,7 @@ ugrammar = FeatureGrammar.fromstring("""\
     CONJ -> 'and'
     
     ############ Adverb & Adjective ############
-    ADJ -> 'blue' | 'healthy' | 'green' | 'same'
+    ADJ -> 'blue' | 'healthy' | 'green' | 'same' | 'friendly'
     ADV -> 'always' | 'never' | 'intensely'
     
     ############## Preposition ##################
@@ -170,11 +180,9 @@ whom do Homer and Lisa serve
 what salad does Bart think Homer serves Lisa
 all the morning trains from Edinburgh to London leave before 10
 most flights that serve breakfast leave at 9
+the people who live in the house are friendly
+Lisa claims that Bart always leaves before 8
 """
-'''
-    the people who live in the house are friendly
-    Lisa claims that Bart always leaves before 8
-'''
 sents = text.splitlines()
 for sent in sents:
     parses = uparser.parse(sent.split())
