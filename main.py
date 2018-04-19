@@ -37,8 +37,8 @@ ugrammar = FeatureGrammar.fromstring("""\
     GER -> V[FORM=prespart, SUBCAT=nil]
     
     ########### Noun Lexicon ##########
-    N[NUM=sing] -> 'salad'  | 'midnight' | 'kitchen' | 'table'  | 'robot'   | 'sky' | 'plane' | 'house'
-    N[NUM=plur] -> 'shoes'  | 'tables'   | 'robots'  | 'trains' | 'flights' | 'people'
+    N[NUM=sing] -> 'salad'  | 'midnight' | 'kitchen' | 'table'  | 'plane' | 'house'
+    N[NUM=plur] -> 'shoes'  | 'tables'   | 'trains' | 'flights' | 'people'
     N -> 'milk' | 'morning' | 'midnight' | 'Edinburgh' | 'London' | '8' |'9' | '10' | 'breakfast'
     
     ######################################################################################################
@@ -61,15 +61,16 @@ ugrammar = FeatureGrammar.fromstring("""\
     ARG[CAT=s] -> S
     ARG[CAT=cl] -> REL_CL
     
-    
-    ############### PRESENT ###################
-    #########----- Intransitive -----##########
+    #########################################################################
+    ############################## PRESENT ##################################
+    #########################################################################
+    ############## Intransitive ###############
     V[FORM=pres, NUM=sing, SUBCAT=nil]-> 'laughs' | 'smiles' | 'walks' | 'serves' | 'drinks' | 'leaves' 
     V[FORM=pres, NUM=plur, SUBCAT=nil] -> 'laugh' | 'smile' | 'walk' | 'serve' |'drink' | 'leave' 
     V[FORM=pres, NUM=sing, SUBCAT=[HEAD=pp, TAIL=nil]] -> 'leaves' | 'lives'
     V[FORM=pres, NUM=plur, SUBCAT=[HEAD=pp, TAIL=nil]] -> 'leave'  | 'live'
     
-    #########----- Transitive ------###########
+    ############## Transitive ################
     V[FORM=pres, NUM=sing, SUBCAT=[HEAD=s,TAIL=nil]] -> 'thinks' | 'believes'
     V[FORM=pres, NUM=plur, SUBCAT=[HEAD=s,TAIL=nil]] -> 'think' | 'believe'
     
@@ -89,18 +90,22 @@ ugrammar = FeatureGrammar.fromstring("""\
     V[FORM=pres, NUM=plur, SUBCAT=[HEAD=nom, TAIL=[HEAD=np,TAIL=nil]]] -> 'serve'
     V[FORM=pres, NUM=plur, SUBCAT=[HEAD=s, TAIL=[HEAD=np,TAIL=nil]]] -> 'think' | 'believe'
     
-    ################# Past ####################
-    #########----- Intransitive -----##########
+    #########################################################################
+    ################################ Past ###################################
+    #########################################################################
+    ############## Intransitive ###############
     V[FORM=past, SUBCAT=nil] -> 'laughed' | 'smiled' | 'walked'
     
-    #########----- Transitive ------###########
+    ############### Transitive ################
     V[FORM=past, SUBCAT=[HEAD=np,TAIL=nil]] -> 'drank' | 'wore' | 'served'
     V[FORM=past, SUBCAT=[HEAD=nom,TAIL=nil]] ->'drank' | 'wore' | 'served'
     V[FORM=pastpart, SUBCAT=[HEAD=np,TAIL=nil]] ->'drunk' | 'worn' | 'served' | 'seen'
     V[FORM=pastpart, SUBCAT=[HEAD=nom,TAIL=nil]] ->'drunk' | 'worn' | 'served' | 'seen'
     
     
-    ############### PRESENT CONT. #############
+    #########################################################################
+    ############################## PRESENT CONT. ############################
+    #########################################################################
     V[FORM=prespart, SUBCAT=[HEAD=nom, TAIL=nil]]   -> 'drinking' | 'wearing'  | 'using' | 'fighting'
     V[FORM=prespart, SUBCAT=[HEAD=np,  TAIL=nil]]   -> 'drinking' | 'wearing'  | 'using' | 'fighting'
     V[FORM=prespart, SUBCAT=[HEAD=pp,  TAIL=nil]]   -> 'drinking' | 'fighting' | 'walking'
@@ -115,13 +120,8 @@ ugrammar = FeatureGrammar.fromstring("""\
     V[FORM=pastpart,  SUBCAT=[HEAD=cl, TAIL=nil]]    -> 'said'   | 'claimed'
     V[FORM=prespart,  SUBCAT=[HEAD=cl, TAIL=nil]]    -> 'saying' | 'claiming'
     
-    
-   
-    
     ################## Modal ##################
     MOD -> 'may'
-    
-    
     
     ################ Determiner ###############
     DET[NUM=sing] -> 'a' | 'the' | 'that'
@@ -177,10 +177,6 @@ what salad does Bart serve
 whom does Homer serve salad
 whom do Homer and Lisa serve
 what salad does Bart think Homer serves Lisa
-Lisa is drinking milk
-Lisa and Bart are wearing the same blue shoes
-those robots are fighting intensely beyond the sky
-Bart wears milk beyond the healthy kitchen
 
 did the plane leave
 whom does Homer serve salad
