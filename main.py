@@ -6,9 +6,10 @@ ugrammar = FeatureGrammar.fromstring("""\
     ################################################# SENTENCE ###########################################
     ######################################################################################################
     S -> NP[NUM=?n] VP[NUM=?n] | PP S
-    S -> WH_NP AUX[FORM=?f, NUM=?n] NP[NUM=?n] VP
-    S ->       AUX[FORM=?f, NUM=?n] NP[NUM=?n] VP
     S -> VP
+    S -> WH_NP AUX[FORM=?f, NUM=?n] NP[NUM=?n] VP
+    S -> WH_NP VP
+    S ->       AUX[FORM=?f, NUM=?n] NP[NUM=?n] VP
     
     ######## WH-Question ###########
     WH_NP -> WH | WH ARG[CAT=?arg] 
@@ -39,7 +40,7 @@ ugrammar = FeatureGrammar.fromstring("""\
     
     ########### Noun Lexicon ##########
     N[NUM=sing] -> 'salad'  | 'midnight' | 'kitchen' | 'table'  | 'plane' | 'house'
-    N[NUM=plur] -> 'shoes'  | 'tables'   | 'trains' | 'flights' | 'people'
+    N[NUM=plur] -> 'shoes'  | 'tables'   | 'trains' | 'flights' | 'people' | 'airlines'
     N -> 'milk' | 'morning' | 'midnight' | 'Edinburgh' | 'London' | '8' |'9' | '10' | 'breakfast'
     
     ######################################################################################################
@@ -69,8 +70,8 @@ ugrammar = FeatureGrammar.fromstring("""\
     ############## Intransitive ###############
     V[FORM=pres, NUM=sing, SUBCAT=nil]-> 'laughs' | 'smiles' | 'walks' | 'serves' | 'drinks' | 'leaves' 
     V[FORM=pres, NUM=plur, SUBCAT=nil] -> 'laugh' | 'smile' | 'walk' | 'serve' |'drink' | 'leave'
-    V[FORM=pres, NUM=sing, SUBCAT=[HEAD=pp, TAIL=nil]] -> 'leaves' | 'lives'
-    V[FORM=pres, NUM=plur, SUBCAT=[HEAD=pp, TAIL=nil]] -> 'leave'  | 'live'
+    V[FORM=pres, NUM=sing, SUBCAT=[HEAD=pp, TAIL=nil]] -> 'leaves' | 'lives' | 'flies'
+    V[FORM=pres, NUM=plur, SUBCAT=[HEAD=pp, TAIL=nil]] -> 'leave'  | 'live' | 'fly'
     
     ############## Transitive ################
     V[FORM=pres, NUM=sing, SUBCAT=[HEAD=s,TAIL=nil]] -> 'thinks' | 'believes'
@@ -195,6 +196,7 @@ all the morning trains from Edinburgh to London leave before 10
 most flights that serve breakfast leave at 9
 the people who live in the house are friendly
 Lisa claims that Bart always leaves before 8
+what airlines fly from Edinburgh to London
 """
 sents = text.splitlines()
 for sent in sents:
