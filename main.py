@@ -30,9 +30,8 @@ ugrammar = FeatureGrammar.fromstring("""\
     PROP_N[NUM=sing] -> 'Homer' | 'Bart' | 'Lisa'
     
     ######## Relative Clause ##########
-    REL_CL -> REL_P VP | COMP S
-    COMP   -> 'that'
-    REL_P  -> 'that' | 'who'
+    REL_CL -> S | COMP S | COMP VP
+    COMP   -> 'that' | 'who'
     
     ############# Gerund ##############
     GER_P -> GER NP | GER NOM
@@ -61,7 +60,6 @@ ugrammar = FeatureGrammar.fromstring("""\
     ARG[CAT=np] -> NP
     ARG[CAT=pp] -> PP
     ARG[CAT=nom] -> NOM
-    ARG[CAT=s] -> S
     ARG[CAT=cl] -> REL_CL
     
     #########################################################################
@@ -194,7 +192,8 @@ whom do Homer and Lisa serve
 what salad does Bart think Homer serves Lisa
 all the morning trains from Edinburgh to London leave before 10
 most flights that serve breakfast leave at 9
-the people who live in the house are friendly
+some flights fly leave before 8
+these people who live in the house are friendly
 Lisa claims that Bart always leaves before 8
 what airlines fly from Edinburgh to London
 """
