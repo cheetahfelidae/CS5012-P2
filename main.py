@@ -21,10 +21,13 @@ ugrammar = FeatureGrammar.fromstring("""\
     NP[NUM=?n]   -> PRE_DET NP[NUM=?n] | PROP_N[NUM=?n] | PROP_N[NUM=?n] GER_P | DET[NUM=?n] NOM[NUM=?n] | NOM[NUM=?n]
     NP[NUM=plur] -> NP CONJ NP
     
-    NOM[NUM=?n]  -> ADJ_P NOM[NUM=?n] | NOM[NUM=?n] REL_CL | N[NUM=?n] | N[NUM=?n] PP | GER_P | NOM[NUM=?n] N[NUM=?n] | NOM[NUM=?n] PP
+    NOM[NUM=?n]  -> ADJ_P NOM[NUM=?n] | QUAN NOM[NUM=plur] | NOM[NUM=?n] REL_CL | N[NUM=?n] | N[NUM=?n] PP | GER_P | NOM[NUM=?n] N[NUM=?n] | NOM[NUM=?n] PP
     
     ########## Predeterminer ##########
     PRE_DET -> 'all' | 'most'
+    
+    ########## Quantifier ##########
+    QUAN -> 'some' | 'many'
     
     ############# Pronoun #############
     PROP_N[NUM=sing] -> 'Homer' | 'Bart' | 'Lisa'
@@ -192,7 +195,7 @@ whom do Homer and Lisa serve
 what salad does Bart think Homer serves Lisa
 all the morning trains from Edinburgh to London leave before 10
 most flights that serve breakfast leave at 9
-some flights fly leave before 8
+some flights leave before 8
 these people who live in the house are friendly
 Lisa claims that Bart always leaves before 8
 what airlines fly from Edinburgh to London
