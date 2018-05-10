@@ -41,9 +41,8 @@ ugrammar = FeatureGrammar.fromstring("""\
     GER   -> V[FORM=prespart, SUBCAT=nil]
     
     ########### Noun Lexicon ##########
-    N[NUM=sing] -> 'salad'  | 'midnight' | 'kitchen' | 'table'   | 'plane'  | 'house'
+    N[NUM=sing] -> 'salad'  | 'midnight' | 'kitchen' | 'table'   | 'plane'  | 'house' | 'milk' | 'morning' | 'midnight' | 'Edinburgh' | 'London' | '8' |'9' | '10' | 'breakfast'
     N[NUM=plur] -> 'shoes'  | 'tables'   | 'trains'  | 'flights' | 'people' | 'airlines'
-    N -> 'milk' | 'morning' | 'midnight' | 'Edinburgh' | 'London' | '8' |'9' | '10' | 'breakfast'
     
     ######################################################################################################
     ############################################## VERB PHRASE ###########################################
@@ -51,10 +50,10 @@ ugrammar = FeatureGrammar.fromstring("""\
     VP[SUBCAT=?rest, NUM=?n] -> VP[TENSE=?t, NUM=?n, SUBCAT=[HEAD=?arg, TAIL=?rest]] ARG[CAT=?arg] | V[NUM=?n, SUBCAT=?rest]
     VP[SUBCAT=?rest, NUM=?n] -> ADV_P V[NUM=?n, SUBCAT=?rest] | V[NUM=?n, SUBCAT=?rest] ADV_P 
     VP[SUBCAT=?rest, NUM=?n] -> MODP VP[TENSE=?t, SUBCAT=[HEAD=?arg, TAIL=?rest]] ARG[CAT=?arg]
-    VP[SUBCAT=?rest, NUM=?n] -> VTB VP[SUBCAT=[HEAD=?arg, TAIL=?rest]] ARG[CAT=?arg]
-    VP[SUBCAT=?rest, NUM=?n] -> VTB VP[SUBCAT=?rest, NUM=?n]
+    VP[SUBCAT=?rest, NUM=?n] -> VTB[NUM=?n] VP[SUBCAT=[HEAD=?arg, TAIL=?rest]] ARG[CAT=?arg]
+    VP[SUBCAT=?rest, NUM=?n] -> VTB[NUM=?n] VP[SUBCAT=?rest, NUM=?n]
     VP[SUBCAT=?rest, NUM=?n] -> VP[FORM=pres, NUM=plur, SUBCAT=[HEAD=?arg, TAIL=?rest]] ARG[CAT=?arg]
-    VP[SUBCAT=nil, NUM=?n]   -> VTB ADJ_P
+    VP[SUBCAT=nil, NUM=?n]   -> VTB[NUM=?n] ADJ_P
     
     MODP -> MOD AUX[FORM=?f, NUM=plur] |  MOD 'not' AUX[FORM=?f, NUM=plur]
     
@@ -81,8 +80,8 @@ ugrammar = FeatureGrammar.fromstring("""\
     V[FORM=pres, NUM=sing, SUBCAT=[HEAD=np,TAIL=nil]] ->'serves' | 'drinks' 
     V[FORM=pres, NUM=plur, SUBCAT=[HEAD=np,TAIL=nil]] ->'serve'  | 'drink' 
     
-    V[FORM=pres, NUM=sing, SUBCAT=[HEAD=pp,TAIL=nil]] ->'walks' | 'teaches' 
-    V[FORM=pres, NUM=plur, SUBCAT=[HEAD=pp,TAIL=nil]] ->'walk' | 'teach' 
+    V[FORM=pres, NUM=sing, SUBCAT=[HEAD=pp,TAIL=nil]] ->'walks' 
+    V[FORM=pres, NUM=plur, SUBCAT=[HEAD=pp,TAIL=nil]] ->'walk' 
     
     V[FORM=pres, NUM=plur, SUBCAT=[HEAD=nom,TAIL=nil]] ->'drink' | 'wear' | 'serve' | 'like'
     V[FORM=pres, NUM=sing, SUBCAT=[HEAD=nom,TAIL=nil]] ->'drinks' | 'wears' | 'serves' | 'likes'
@@ -201,6 +200,10 @@ Lisa and Bart likes drinking milk
 the morning flights from Edinburgh leave milk
 
 many flights that serves breakfast leave after 10
+
+Bart laughs in the kitchen
+Bart serves
+milk are healthy
 """
 sents = text.splitlines()
 for sent in sents:
